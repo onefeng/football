@@ -114,7 +114,7 @@ class Master(object):
         results=self.get_all_data(*time_list)
         for result in results:
             write_to_file(result)
-            #self.lj.insert_json(table, data=result)
+            self.lj.insert_json(table, data=result)
 
 
 if __name__ == '__main__':

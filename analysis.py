@@ -88,17 +88,19 @@ class DataGet(object):
             'channel': 'android_JH_001'
         }
         #proxies=proxy
-        if method=='sport':
-            data = requests.post(url=self.sport_url,data=sport_data, headers=self.headers).text
-        elif method=='index':
-            data = requests.post(url=self.index_url, data=index_data, headers=self.headers).text
-            data = json.loads(data)
-        elif method=='league':
-            data = requests.post(url=self.league_url,data=league_data, headers=self.headers).text
-            data = json.loads(data)
-        else:
-            data=[]
-
+        try:
+            if method=='sport':
+                data = requests.post(url=self.sport_url,data=sport_data, headers=self.headers).text
+            elif method=='index':
+                data = requests.post(url=self.index_url, data=index_data, headers=self.headers).text
+                data = json.loads(data)
+            elif method=='league':
+                data = requests.post(url=self.league_url,data=league_data, headers=self.headers).text
+                data = json.loads(data)
+            else:
+                data=[]
+        except Exception as e:
+            data={}
         return data
 
 
@@ -110,8 +112,6 @@ class DataAnalysis(object):
 
     def __init__(self):
         self.w=re.compile(r'.*?周.\d{3}.*?', re.S)
-
-
     # 解析比赛数据
     def sport_jiexi(self, datas):
 
@@ -134,34 +134,50 @@ class DataAnalysis(object):
 
     # 解析指数数据
     def index_jiexi(self, datas):
-        index_data = {}
+        index_data = {
+            'w_first_home_win':None,
+            'w_first_stand_off':None,
+            'w_first_guest_win': None,
+            'j_first_home_win': None,
+            'j_first_stand_off': None,
+            'j_first_guest_win': None,
+            'p_first_home_win': None,
+            'p_first_stand_off': None,
+            'p_first_guest_win': None
+        }
         # 获取欧赔数据
-        standard = datas.get('data').get('standard')
-        length = len(standard)
-        p_first_home_win = 0
-        p_first_stand_off = 0
-        p_first_guest_win = 0
-        for temp in standard:
-            if temp.get('name_cn') == '威廉希尔':
-                index_data['w_first_home_win']=float(temp.get('first_home_win'))
-                index_data['w_first_stand_off']=float(temp.get('first_stand_off'))
-                index_data['w_first_guest_win']=float(temp.get('first_guest_win'))
-            elif temp.get('name_cn') == '竞彩官方':
-                index_data['j_first_home_win'] = float(temp.get('first_home_win'))
-                index_data['j_first_stand_off'] = float(temp.get('first_stand_off'))
-                index_data['j_first_guest_win'] = float(temp.get('first_guest_win'))
-            p_first_home_win = p_first_home_win + float(temp.get('first_home_win'))
-            p_first_stand_off = p_first_stand_off + float(temp.get('first_stand_off'))
-            p_first_guest_win = p_first_guest_win + float(temp.get('first_guest_win'))
+        try:
+            standard = datas.get('data').get('standard')
+            length = len(standard)
+            p_first_home_win = 0
+            p_first_stand_off = 0
+            p_first_guest_win = 0
+            for temp in standard:
+                if temp.get('name_cn') == '威廉希尔':
+                    index_data['w_first_home_win']=float(temp.get('first_home_win'))
+                    index_data['w_first_stand_off']=float(temp.get('first_stand_off'))
+                    index_data['w_first_guest_win']=float(temp.get('first_guest_win'))
+                elif temp.get('name_cn') == '竞彩官方':
+                    index_data['j_first_home_win'] = float(temp.get('first_home_win'))
+                    index_data['j_first_stand_off'] = float(temp.get('first_stand_off'))
+                    index_data['j_first_guest_win'] = float(temp.get('first_guest_win'))
+                p_first_home_win = p_first_home_win + float(temp.get('first_home_win'))
+                p_first_stand_off = p_first_stand_off + float(temp.get('first_stand_off'))
+                p_first_guest_win = p_first_guest_win + float(temp.get('first_guest_win'))
 
-        index_data['p_first_home_win']=p_first_home_win / length
-        index_data['p_first_stand_off'] = p_first_stand_off / length
-        index_data['p_first_guest_win'] = p_first_guest_win/ length
+            index_data['p_first_home_win']=p_first_home_win / length
+            index_data['p_first_stand_off'] = p_first_stand_off / length
+            index_data['p_first_guest_win'] = p_first_guest_win/ length
+        except Exception as e:
+            print('指数缺失')
 
         return index_data
     # 赛事数据解析
+
     def league_jiexi(self,datas):
-        league_data = {}
+        league_data = {
+            'sub_league':None
+        }
         league_data['sub_league'] = datas.get('data').get('sub_league')
 
         return league_data
