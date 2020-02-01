@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
-
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
 __author__='onefeng'
 
 import random
@@ -110,22 +110,22 @@ class Master(object):
             print(result)
             write_to_file(result)
             #self.lj.insert_json(table, data=result)
+    def hh(self,d1,v):
+        print(d1+v)
 
     def start(self):
         #table = cf.get("input", "table_name")
         # 建表
         #self.create_table(table)
+        # t1 = cf.get("input", "start")
+        # t2 = cf.get("input", "end")
+        # time_list = self.getdate(t1, t2)
         p=Pool()
-        t1 = cf.get("input", "start")
-        t2 = cf.get("input", "end")
-        time_list = self.getdate(t1, t2)
 
         # for time in time_list:
         #     p.apply_async(self.wirte_data, args=(time,))
-
-        p.apply_async(self.wirte_data, args=('2019-01-01',))
-        p.apply_async(self.wirte_data, args=('2019-01-02',))
-
+        p.apply_async(self.hh, args=('2019-01-01','u'))
+        p.apply_async(self.hh, args=('2019-01-02','l'))
         p.close()
         p.join()
 
@@ -133,9 +133,14 @@ class Master(object):
 
 if __name__ == '__main__':
     master=Master()
-    #master.wirte_data('2019-01-15')
-    master.start()
+    def hh(date):
+        master.wirte_data(date)
+    t1 = cf.get("input", "start")
+    t2 = cf.get("input", "end")
+    time_list = master.getdate(t1, t2)
+    p = Pool()
 
-
-
-
+    for time in time_list:
+        p.apply_async(hh, args=(time,))
+    p.close()
+    p.join()
