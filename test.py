@@ -115,13 +115,17 @@ class Master(object):
         #table = cf.get("input", "table_name")
         # 建表
         #self.create_table(table)
-        p=Pool(16)
+        p=Pool()
         t1 = cf.get("input", "start")
         t2 = cf.get("input", "end")
         time_list = self.getdate(t1, t2)
 
-        for time in time_list:
-            p.apply_async(self.wirte_data, args=(time,))
+        # for time in time_list:
+        #     p.apply_async(self.wirte_data, args=(time,))
+
+        p.apply_async(self.wirte_data, args=('2019-01-01',))
+        p.apply_async(self.wirte_data, args=('2019-01-02',))
+
         p.close()
         p.join()
 
