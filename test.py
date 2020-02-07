@@ -107,9 +107,9 @@ class Master(object):
         # 获取所有数据
         results=self.get_all_data(date)
         for result in results:
-            print(result)
-            write_to_file(result)
-            #self.lj.insert_json(table, data=result)
+            #print(result)
+            #write_to_file(result)
+            self.lj.insert_json("gather_industry.jihai_test", data=result)
     def hh(self,d1,v):
         print(d1+v)
 
@@ -139,8 +139,8 @@ if __name__ == '__main__':
     t2 = cf.get("input", "end")
     time_list = master.getdate(t1, t2)
     p = Pool()
-
-    for time in time_list:
-        p.apply_async(hh, args=(time,))
+    p.map(hh,time_list)
+    # for time in time_list:
+    #     p.apply_async(hh, args=(time,))
     p.close()
     p.join()

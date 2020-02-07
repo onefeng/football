@@ -115,11 +115,32 @@ class Master(object):
         for result in results:
             write_to_file(result)
             self.lj.insert_json(table, data=result)
+import requests
+class Spider(object):
+    headers={
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
+    }
+
+    def get_one_page(self,n,start='2014-01-01',end='2020-02-25'):
+        url='http://www.lottery.gov.cn/football/result_{}.jspx?f_league_id=0&f_league_name=全部联赛&startDate={}&endDate={}'.format(n,start,end)
+        response=requests.get(url,headers=self.headers)
+        if response.status_code==200:
+            return response.text
+        return None
+
+    def parse_one_page(self,html):
+        pass
+    def main(self):
+
+        pass
 
 
 if __name__ == '__main__':
-    master=Master()
-    master.start()
+    spider=Spider()
+    d=spider.get_one_page(1)
+    print(d)
+    # master=Master()
+    # master.start()
 
 
 
